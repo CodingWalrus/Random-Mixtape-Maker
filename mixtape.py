@@ -3,7 +3,9 @@
 # Random Mixtape Maker - a computer program to generate randomized playlists
 # from your music library. I saw something like this once on Donation Coder,
 # but I can't find it anymore, and that one wasn't open source anyways. So I
-# decided to make my own.
+# decided to make my own. 
+#
+# This program can only be run in the command line currently.
 #
 # Okay, I'm going to try and keep this simple. First big project in Python,
 # first time using Github, lots of firsts for me in this. My formatting for
