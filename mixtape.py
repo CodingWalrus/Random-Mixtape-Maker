@@ -65,6 +65,7 @@ def playlist_maker(songs_list,playlist_name):
 	# Writes all songs in songs_list to playlist
 	for song in songs_list:
 		playlist.write(song + '\n')
+	playlist.close()
 			
 songs = mp3_search(args.directory,args.query)
 print(songs)
