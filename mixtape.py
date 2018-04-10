@@ -22,10 +22,13 @@ parser.add_argument('directory',default='.\\',
                     help='Path to top-level directory to search through for music')
 # Name of playlist to create
 parser.add_argument('playlist_name',default='playlist',
-		    help='Specifies the name of the created playlist')
+					help='Specifies the name of the created playlist')
 # Includes sound file extensions to search for
 parser.add_argument('file_extensions',default='mp3', nargs = '+',
-		    help='Specifies the file extensions that can be added to the playlist, single spaced')
+					help='Specifies the file extensions that can be added to the playlist, single spaced')
+# Sets limit for playlist length by song number
+parser.add_argument('-track_nums',type=int,
+					help='Sets the maximum number of tracks for the playlist')
 # Recursive search setting
 parser.add_argument('-query',default='q',choices = ['y','Y','n','N','q','Q'],
                     help='Determines if the program searches subfolders or not: Y - search subfolders | N - do not subfolders | Q - ask in program')
@@ -66,15 +69,16 @@ def song_search(folder, recursive, extensions):
 	return song_list
 
 # Playlist file writer function	
-def playlist_maker(songs_list,playlist_name):
+def playlist_maker(songs_list,playlist_name,track_num=0):
+	if track_num == 0:
+		track_num = len(songs_list)
 	# opens playlist file for writing
 	playlist = open(playlist_name + '.m3u','w')
-	# Writes all songs in songs_list to playlist
-	for song in songs_list:
-		playlist.write(song + '\n')
+	# Writes songs in songs_list to playlist
+	for i in range(track_num):
+		playlist.write(songs_list[i] + '\n')
 	playlist.close()
 			
 songs = song_search(args.directory,args.query,args.file_extensions)
-print(songs)
-playlist_maker(songs,args.playlist_name)
+playlist_maker(songs,args.playlist_name,args.track_nums)
 
