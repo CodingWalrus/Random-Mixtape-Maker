@@ -13,7 +13,7 @@
 # may not be the best. Please bear with me on the next bit.
 
 # Import os, argparse, random libraries
-import os, argparse, random
+import os, argparse, random, pprint
 
 # Create parser for command line arguments
 parser = argparse.ArgumentParser(description='Finds songs in a directory and adds them to a random playlist.')
@@ -52,33 +52,58 @@ def song_search(folder, recursive, extensions):
 	for extension in extensions:
 		# Finds all <extension> files in the directory, adds to list
 		if recursive == 'y':
-			# Finds all mp3s in directory, including subfolders
+			# Finds all <extension> files in directory, including subfolders
 			for folder, subfolders, files in os.walk(folder):
 				folder = os.path.abspath(folder)
 				for file in files:
 					if file.endswith(extension):
 						song_list.append(os.path.join(folder,file))
 		else:
-			# Finds all mp3s in directory, not including subfolders
+			# Finds all <extension> files in directory, not including subfolders
 			for file in os.listdir(folder):
 				if file.endswith(extension):
 					song_list.append(os.path.join(os.path.abspath(folder),file))
 				
-	# Shuffle the song list
-	random.shuffle(song_list)
+	# Return the song list
 	return song_list
 
-# Playlist file writer function	
-def playlist_maker(songs_list,playlist_name,track_num=0):
-	if track_num == 0:
-		track_num = len(songs_list)
-	# opens playlist file for writing
-	playlist = open(playlist_name + '.m3u','w')
+# Playlist creator function	
+def playlist_maker(songs_list,track_num=0):
+	while True:
+		# Initialize variables
+		random.shuffle(songs_list)
+		playlist = songs_list
+		print(type(playlist))
+		name_list=[]
+	
+		# Limits playlist length based on number of tracks
+		if track_num != 0:
+			if track_num <= len(playlist):
+				playlist = playlist[:track_num]
+	
+		# Displays list of song names to verify list for user	
+		for song in playlist:
+			name_list.append(os.path.basename(song))
+		pprint.pprint(name_list)
+		response = input('Is this playlist acceptable? [Y/N]')
+	
+		# Returns playlist if positive, redoes list if negative
+		if response.lower() == 'y':
+			print(type(playlist))
+			return playlist
+		else:
+			continue
+
+# Playlist writer function
+def playlist_writer(playlist_name,playlist):
+    # opens playlist file for writing
+	playlist_file = open(playlist_name + '.m3u','w')
 	# Writes songs in songs_list to playlist
-	for i in range(track_num):
-		playlist.write(songs_list[i] + '\n')
-	playlist.close()
+	for song in playlist:
+		playlist_file.write(song + '\n')
+	playlist_file.close()
 			
 songs = song_search(args.directory,args.query,args.file_extensions)
-playlist_maker(songs,args.playlist_name,args.track_nums)
-
+playlist_made = playlist_maker(songs,args.track_nums)
+print(type(playlist_made))
+#playlist_writer(args.playlist_name,playlist_made)
