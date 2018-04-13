@@ -14,6 +14,7 @@
 
 # Import os, argparse, random libraries
 import os, argparse, random, pprint
+from tinytag import TinyTag
 
 # Create parser for command line arguments
 parser = argparse.ArgumentParser(description='Finds songs in a directory and adds them to a random playlist.')
@@ -26,6 +27,9 @@ parser.add_argument('playlist_name',default='playlist',
 # Includes sound file extensions to search for
 parser.add_argument('file_extensions',default='mp3', nargs = '+',
 					help='Specifies the file extensions that can be added to the playlist, single spaced')
+# Sets limit for playlist length by duration
+parser.add_argument('-time_length',type=int,
+					help='Sets the maximum length of the playlist, in minutes')
 # Sets limit for playlist length by song number
 parser.add_argument('-track_nums',type=int,
 					help='Sets the maximum number of tracks for the playlist')
@@ -68,13 +72,25 @@ def song_search(folder, recursive, extensions):
 	return song_list
 
 # Playlist creator function	
-def playlist_maker(songs_list,track_num=0):
+def playlist_maker(songs_list,track_num=None,max_duration=604800):
 	while True:
 		# Initialize variables
 		random.shuffle(songs_list)
 		playlist = songs_list
-		print(type(playlist))
 		name_list=[]
+		duration = 0
+		last_track = 0
+		if track_num is None:
+			track_num = 0
+			
+		# Limits playlist length based on duration
+		for song in playlist:
+			last_track += 1
+			tag = TinyTag.get(song)
+			duration += tag.duration
+			if duration > max_duration:
+				playlist = playlist[:last_track]
+				
 	
 		# Limits playlist length based on number of tracks
 		if track_num != 0:
@@ -89,7 +105,6 @@ def playlist_maker(songs_list,track_num=0):
 	
 		# Returns playlist if positive, redoes list if negative
 		if response.lower() == 'y':
-			print(type(playlist))
 			return playlist
 		else:
 			continue
@@ -104,6 +119,5 @@ def playlist_writer(playlist_name,playlist):
 	playlist_file.close()
 			
 songs = song_search(args.directory,args.query,args.file_extensions)
-playlist_made = playlist_maker(songs,args.track_nums)
-print(type(playlist_made))
-#playlist_writer(args.playlist_name,playlist_made)
+playlist_made = playlist_maker(songs,args.track_nums,60*args.time_length)
+playlist_writer(args.playlist_name,playlist_made)
