@@ -27,6 +27,9 @@ parser.add_argument('playlist_name',default='playlist',
 # Includes sound file extensions to search for
 parser.add_argument('file_extensions',default='mp3', nargs = '+',
 					help='Specifies the file extensions that can be added to the playlist, single spaced')
+# Sets limit for playlist length by filesize of songs
+parser.add_argument('-file_size',type=int,
+					help='Sets the maximum size of the playlist\'s audio files, in bytes')
 # Sets limit for playlist length by duration
 parser.add_argument('-time_length',type=int,
 					help='Sets the maximum length of the playlist, in minutes')
@@ -72,7 +75,7 @@ def song_search(folder, recursive, extensions):
 	return song_list
 
 # Playlist creator function	
-def playlist_maker(songs_list,track_num=None,max_duration=604800):
+def playlist_maker(songs_list,track_num=None,max_duration=604800,max_filesize=32212254720):
 	while True:
 		# Initialize variables
 		random.shuffle(songs_list)
@@ -80,9 +83,19 @@ def playlist_maker(songs_list,track_num=None,max_duration=604800):
 		name_list=[]
 		duration = 0
 		last_track = 0
+		file_size = 0
 		if track_num is None:
 			track_num = 0
 			
+		# Limits playlist length based on filesizes
+		for song in playlist:
+			last_track += 1
+			tag = TinyTag.get(song)
+			file_size += tag.filesize
+			if file_size > max_filesize:
+				playlist = playlist[:last_track]
+				last_track = 0
+		
 		# Limits playlist length based on duration
 		for song in playlist:
 			last_track += 1
@@ -90,7 +103,7 @@ def playlist_maker(songs_list,track_num=None,max_duration=604800):
 			duration += tag.duration
 			if duration > max_duration:
 				playlist = playlist[:last_track]
-				
+				last_track = 0
 	
 		# Limits playlist length based on number of tracks
 		if track_num != 0:
