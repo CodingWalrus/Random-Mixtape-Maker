@@ -4,8 +4,8 @@ This is a simple project to help me learn how to program in Python better and st
 
 ### Update Log:
 
-##### -- 4/8/2018: 
-  * Created repository, committed initial codebase - currently loops through 
+##### -- 4/8/2018:
+  * Created repository, committed initial codebase - currently loops through
   all songs in given directory and writes them to a random playlist
 ##### -- 4/9/2018:
   * Added multiple file support to mixtape program
@@ -14,3 +14,5 @@ This is a simple project to help me learn how to program in Python better and st
   * Refined track number limitation of list
   * Added user approval/disapproval of generated playlist, allowed for re-generation
   * Put playlist file writing into separate function
+##### -- 5/4/2018: Sorry about the update drought, finals were kicking the crap out of me.
+  * Fixed the time length and file size restricting components of the program.
