@@ -28,13 +28,13 @@ parser.add_argument('playlist_name',default='playlist',
 parser.add_argument('file_extensions',default='mp3', nargs = '+',
 					help='Specifies the file extensions that can be added to the playlist, single spaced')
 # Sets limit for playlist length by filesize of songs
-parser.add_argument('-file_size',type=int,
+parser.add_argument('-file_size',type=int,default=2000000000000,
 					help='Sets the maximum size of the playlist\'s audio files, in bytes')
 # Sets limit for playlist length by duration
-parser.add_argument('-time_length',type=int,
+parser.add_argument('-time_length',type=int,default=604800,
 					help='Sets the maximum length of the playlist, in minutes')
 # Sets limit for playlist length by song number
-parser.add_argument('-track_nums',type=int,
+parser.add_argument('-track_nums',type=int,default=0,
 					help='Sets the maximum number of tracks for the playlist')
 # Recursive search setting
 parser.add_argument('-query',default='q',choices = ['y','Y','n','N','q','Q'],
@@ -75,7 +75,7 @@ def song_search(folder, recursive, extensions):
 	return song_list
 
 # Playlist creator function	
-def playlist_maker(songs_list,track_num=None,max_duration=604800,max_filesize=32212254720):
+def playlist_maker(songs_list,track_num,max_duration,max_filesize):
 	while True:
 		# Initialize variables
 		random.shuffle(songs_list)
@@ -84,8 +84,6 @@ def playlist_maker(songs_list,track_num=None,max_duration=604800,max_filesize=32
 		duration = 0
 		last_track = 0
 		file_size = 0
-		if track_num is None:
-			track_num = 0
 			
 		# Limits playlist length based on filesizes
 		for song in playlist:
@@ -94,7 +92,9 @@ def playlist_maker(songs_list,track_num=None,max_duration=604800,max_filesize=32
 			file_size += tag.filesize
 			if file_size > max_filesize:
 				playlist = playlist[:last_track]
-				last_track = 0
+				break
+				
+		last_track = 0
 		
 		# Limits playlist length based on duration
 		for song in playlist:
@@ -103,8 +103,10 @@ def playlist_maker(songs_list,track_num=None,max_duration=604800,max_filesize=32
 			duration += tag.duration
 			if duration > max_duration:
 				playlist = playlist[:last_track]
-				last_track = 0
-	
+				break
+		
+		last_track = 0
+		
 		# Limits playlist length based on number of tracks
 		if track_num != 0:
 			if track_num <= len(playlist):
@@ -132,5 +134,5 @@ def playlist_writer(playlist_name,playlist):
 	playlist_file.close()
 			
 songs = song_search(args.directory,args.query,args.file_extensions)
-playlist_made = playlist_maker(songs,args.track_nums,60*args.time_length)
+playlist_made = playlist_maker(songs,args.track_nums,60*args.time_length,args.file_size)
 playlist_writer(args.playlist_name,playlist_made)
