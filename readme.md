@@ -16,3 +16,5 @@ This is a simple project to help me learn how to program in Python better and st
   * Put playlist file writing into separate function
 ##### -- 5/4/2018: Sorry about the update drought, finals were kicking the crap out of me.
   * Fixed the time length and file size restricting components of the program.
+##### -- 5/6/2018:
+  * Began adding support for genre inclusion in playlist.
