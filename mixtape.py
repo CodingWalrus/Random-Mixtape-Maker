@@ -87,17 +87,18 @@ def playlist_maker(songs_list,track_num,max_duration,max_filesize,genres_include
 		duration = 0
 		last_track = 0
 		file_size = 0
-
+		
         # Removes songs not matching genre inclusion criteria
 		if genres_included != None:
 			print(genres_included)
-			for song in songs_list:
-				tag = TinyTag.get(song)
-				print(tag.genre)
-				if tag.genre not in genres_included:
-					playlist.remove(song)
-					print('Removed ' + os.path.basename(song))
-						
+			new_playlist = []
+			for genre in genres_included:
+				for song in playlist:
+					tag = TinyTag.get(song)
+					if genre in tag.genre:
+						new_playlist.append(song)
+			playlist = new_playlist
+			
 		# Limits playlist length based on filesizes
 		for song in playlist:
 			last_track += 1
