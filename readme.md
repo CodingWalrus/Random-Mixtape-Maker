@@ -1,6 +1,6 @@
 # Random Mixtape Maker
 
-This is a simple project to help me learn how to program in Python better and start using Github.
+This is a simple project to help me learn how to program in Python better and start using Github. This program will be able to create m3u playlists with your music library at random, with an array of constraints such as artist, genre, duration, filesize, and more.
 
 ### Update Log:
 
@@ -18,3 +18,7 @@ This is a simple project to help me learn how to program in Python better and st
   * Fixed the time length and file size restricting components of the program.
 ##### -- 5/6/2018:
   * Began adding support for genre inclusion in playlist.
+##### -- 5/7/2018:
+  * Finished support for genre inclusion in playlist.
+  * Added support for genre exclusion, artist inclusion, and artist exclusion in playlist.
+  * Fixed bug causing song duplication in playlist.
