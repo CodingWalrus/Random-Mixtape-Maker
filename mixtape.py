@@ -126,7 +126,6 @@ def playlist_maker(songs_list,track_num,max_duration,max_filesize,genres_include
 					tag = TinyTag.get(song)
 					if artist in tag.artist:
 						new_playlist.append(song)
-						print(os.path.basename(song))
 			playlist = new_playlist
 			new_playlist = []
 			
@@ -167,6 +166,9 @@ def playlist_maker(songs_list,track_num,max_duration,max_filesize,genres_include
 		if track_num != 0:
 			if track_num <= len(playlist):
 				playlist = playlist[:track_num]
+				
+		# Removes any songs that may have reoccured in the playlist
+		playlist = list(set(playlist))
 
 		# Displays list of song names to verify list for user
 		for song in playlist:
