@@ -36,12 +36,18 @@ parser.add_argument('-time_length',type=int,default=604800,
 # Sets limit for playlist length by song number
 parser.add_argument('-track_nums',type=int,default=0,
 					help='Sets the maximum number of tracks for the playlist')
-# Genre inclusion function
+# Genre inclusion arguments
 parser.add_argument('-genre_include',type=str, nargs='*',
-					help='Determines which genres should be included in the playlist')
-# Genre exclusion function
+					help='Determines which genres should be included in the playlist. If a genre you want to include contains whitespace in the name, put the genre in quotes.')
+# Genre exclusion arguments
 parser.add_argument('-genre_exclude',type=str, nargs='*',
-					help='Determines which genres should not be included in the playlist')
+					help='Determines which genres should not be included in the playlist. If a genre you want to exclude contains whitespace in the name, put the genre in quotes.')
+# Artist inclusion arguments
+parser.add_argument('-artist_include',type = str, nargs='*',
+					help='Determines which artists should be included in the playlist. If an artist you want to include contains whitespace in the name, put the artist in quotes.')
+# Artist inclusion arguments
+parser.add_argument('-artist_exclude',type = str, nargs='*',
+					help='Determines which artists should not be included in the playlist. If an artist you want to exclude contains whitespace in the name, put the artist in quotes.')
 # Recursive search setting
 parser.add_argument('-query',default='q',choices = ['y','Y','n','N','q','Q'],
                     help='Determines if the program searches subfolders or not: Y - search subfolders | N - do not subfolders | Q - ask in program')
@@ -81,7 +87,7 @@ def song_search(folder, recursive, extensions):
 	return song_list
 
 # Playlist creator function
-def playlist_maker(songs_list,track_num,max_duration,max_filesize,genres_included,genres_blacklisted):
+def playlist_maker(songs_list,track_num,max_duration,max_filesize,genres_included,genres_blacklisted,artists_included,artists_blacklisted):
 	while True:
 		# Initialize variables
 		random.shuffle(songs_list)
@@ -90,17 +96,17 @@ def playlist_maker(songs_list,track_num,max_duration,max_filesize,genres_include
 		duration = 0
 		last_track = 0
 		file_size = 0
+		new_playlist = []
 		
         # Removes songs not matching genre inclusion criteria
 		if genres_included != None:
-			print(genres_included)
-			new_playlist = []
 			for genre in genres_included:
 				for song in playlist:
 					tag = TinyTag.get(song)
 					if genre in tag.genre:
 						new_playlist.append(song)
 			playlist = new_playlist
+			new_playlist = []
 			
 		# Removes songs that are have blacklisted genres
 		if genres_blacklisted != None:
@@ -111,6 +117,29 @@ def playlist_maker(songs_list,track_num,max_duration,max_filesize,genres_include
 					if genre in tag.genre:
 						new_playlist.remove(song)
 			playlist = new_playlist
+			new_playlist = []
+			
+		# Removes songs not matching artist inclusion criteria
+		if artists_included != None:
+			for artist in artists_included:
+				for song in playlist:
+					tag = TinyTag.get(song)
+					if artist in tag.artist:
+						new_playlist.append(song)
+						print(os.path.basename(song))
+			playlist = new_playlist
+			new_playlist = []
+			
+		# Removes songs with blacklisted artists
+		if artists_blacklisted != None:
+			new_playlist = playlist.copy()
+			for artist in artists_blacklisted:
+				for song in playlist:
+					tag = TinyTag.get(song)
+					if artist in tag.artist:
+						new_playlist.remove(song)
+			playlist = new_playlist
+			new_playlist = []
 			
 		# Limits playlist length based on filesizes
 		for song in playlist:
@@ -162,5 +191,5 @@ def playlist_writer(playlist_name,playlist):
 
 	
 songs = song_search(args.d,args.query,args.ext)
-playlist_made = playlist_maker(songs,args.track_nums,60*args.time_length,args.file_size,args.genre_include,args.genre_exclude)
+playlist_made = playlist_maker(songs,args.track_nums,60*args.time_length,args.file_size,args.genre_include,args.genre_exclude,args.artist_include,args.artist_exclude)
 playlist_writer(args.playlist,playlist_made)
