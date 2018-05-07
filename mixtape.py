@@ -39,6 +39,9 @@ parser.add_argument('-track_nums',type=int,default=0,
 # Genre inclusion function
 parser.add_argument('-genre_include',type=str, nargs='*',
 					help='Determines which genres should be included in the playlist')
+# Genre exclusion function
+parser.add_argument('-genre_exclude',type=str, nargs='*',
+					help='Determines which genres should not be included in the playlist')
 # Recursive search setting
 parser.add_argument('-query',default='q',choices = ['y','Y','n','N','q','Q'],
                     help='Determines if the program searches subfolders or not: Y - search subfolders | N - do not subfolders | Q - ask in program')
@@ -78,7 +81,7 @@ def song_search(folder, recursive, extensions):
 	return song_list
 
 # Playlist creator function
-def playlist_maker(songs_list,track_num,max_duration,max_filesize,genres_included=None):
+def playlist_maker(songs_list,track_num,max_duration,max_filesize,genres_included,genres_blacklisted):
 	while True:
 		# Initialize variables
 		random.shuffle(songs_list)
@@ -97,6 +100,16 @@ def playlist_maker(songs_list,track_num,max_duration,max_filesize,genres_include
 					tag = TinyTag.get(song)
 					if genre in tag.genre:
 						new_playlist.append(song)
+			playlist = new_playlist
+			
+		# Removes songs that are have blacklisted genres
+		if genres_blacklisted != None:
+			new_playlist = playlist.copy()
+			for genre in genres_blacklisted:
+				for song in playlist:
+					tag = TinyTag.get(song)
+					if genre in tag.genre:
+						new_playlist.remove(song)
 			playlist = new_playlist
 			
 		# Limits playlist length based on filesizes
@@ -149,5 +162,5 @@ def playlist_writer(playlist_name,playlist):
 
 	
 songs = song_search(args.d,args.query,args.ext)
-playlist_made = playlist_maker(songs,args.track_nums,60*args.time_length,args.file_size,args.genre_include)
+playlist_made = playlist_maker(songs,args.track_nums,60*args.time_length,args.file_size,args.genre_include,args.genre_exclude)
 playlist_writer(args.playlist,playlist_made)
