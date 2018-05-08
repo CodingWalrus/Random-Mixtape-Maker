@@ -22,3 +22,5 @@ This is a simple project to help me learn how to program in Python better and st
   * Finished support for genre inclusion in playlist.
   * Added support for genre exclusion, artist inclusion, and artist exclusion in playlist.
   * Fixed bug causing song duplication in playlist.
+  * Added support for album and title inclusion and exclusion in playlist.
+  * Fixed bug causing program to repeatedly generate same playlist.
