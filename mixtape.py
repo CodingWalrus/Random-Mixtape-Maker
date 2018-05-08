@@ -13,7 +13,7 @@
 # may not be the best. Please bear with me on the next bit.
 
 # Import os, argparse, random libraries
-import os, argparse, random, pprint
+import os, argparse, random, pprint, sys
 from tinytag import TinyTag
 
 # Create parser for command line arguments
@@ -22,8 +22,11 @@ parser = argparse.ArgumentParser(description='Finds songs in a directory and add
 parser.add_argument('-d',required=True,
                     help='Path to top-level directory to search through for music')
 # Name of playlist to create
-parser.add_argument('-playlist',required=True,
+parser.add_argument('-playlist_name',required=True,
 					help='Specifies the name of the created playlist')
+# Directory location where playlist is saved
+parser.add_argument('-playlist_dir',required=True,
+					help='Specifies the directory where the created playlist will be saved')
 # Includes sound file extensions to search for
 parser.add_argument('-ext',default='mp3', nargs = '*',
 					help='Specifies the file extensions that can be added to the playlist, single spaced')
@@ -238,9 +241,9 @@ def playlist_maker(songs_list,track_num,max_duration,max_filesize,genres_include
 			continue
 
 # Playlist writer function
-def playlist_writer(playlist_name,playlist):
+def playlist_writer(playlist_name,playlist,playlist_dir):
     # opens playlist file for writing
-	playlist_file = open(playlist_name + '.m3u','w')
+	playlist_file = open(os.path.join(playlist_dir,(playlist_name + '.m3u')),'w')
 	# Writes songs in songs_list to playlist
 	for song in playlist:
 		playlist_file.write(song + '\n')
@@ -248,4 +251,4 @@ def playlist_writer(playlist_name,playlist):
 	
 songs = song_search(args.d,args.query,args.ext)
 playlist_made = playlist_maker(songs,args.track_nums,60*args.time_length,args.file_size,args.genre_include,args.genre_exclude,args.artist_include,args.artist_exclude,args.album_include,args.album_exclude,args.title_include,args.title_exclude)
-playlist_writer(args.playlist,playlist_made)
+playlist_writer(args.playlist_name,playlist_made,args.playlist_dir)
